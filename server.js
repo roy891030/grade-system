@@ -223,6 +223,20 @@ app.delete('/api/grades/:gradeType/:chapter', (req, res) => {
   });
 });
 
+// 获取指定科目的所有成绩数据
+app.get('/api/grades/:subject', (req, res) => {
+  const subject = decodeURIComponent(req.params.subject);
+  const query = 'SELECT * FROM grades WHERE subject = ?';
+  db.query(query, [subject], (err, results) => {
+    if (err) {
+      console.error('Error fetching grades:', err);
+      res.status(500).json({ success: false, message: 'Database query error' });
+      return;
+    }
+    res.json({ success: true, grades: results });
+  });
+});
+
 // 启动服务器
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

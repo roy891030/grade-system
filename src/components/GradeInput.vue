@@ -1,12 +1,12 @@
 <template>
   <div class="grade-input">
-    <h2>Select Subject</h2>
+    <h2>選擇科目</h2>
     <nav>
       <ul>
-        <li><router-link to="/grade-input/chinese" class="subject-button chinese">Chinese</router-link></li>
-        <li><router-link to="/grade-input/math" class="subject-button math">Math</router-link></li>
-        <li><router-link to="/grade-input/social" class="subject-button social">Social</router-link></li>
-        <li><router-link to="/grade-input/health" class="subject-button health">Health</router-link></li>
+        <li><router-link to="/grade-input/chinese" class="subject-button chinese">國語</router-link></li>
+        <li><router-link to="/grade-input/math" class="subject-button math">數學</router-link></li>
+        <li><router-link to="/grade-input/social" class="subject-button social">社會</router-link></li>
+        <li><router-link to="/grade-input/health" class="subject-button health">健康</router-link></li>
       </ul>
     </nav>
     <router-view></router-view>

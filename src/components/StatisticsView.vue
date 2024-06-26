@@ -1,12 +1,12 @@
 <template>
   <div class="statistics-view">
-    <h2>Select Subject</h2>
+    <h2>選擇科目</h2>
     <nav>
       <ul>
-        <li><button @click="fetchGrades('國語')" class="subject-button chinese">Chinese</button></li>
-        <li><button @click="fetchGrades('數學')" class="subject-button math">Math</button></li>
-        <li><button @click="fetchGrades('社會')" class="subject-button social">Social</button></li>
-        <li><button @click="fetchGrades('健康')" class="subject-button health">Health</button></li>
+        <li><button @click="fetchGrades('國語')" class="subject-button chinese">國語</button></li>
+        <li><button @click="fetchGrades('數學')" class="subject-button math">數學</button></li>
+        <li><button @click="fetchGrades('社會')" class="subject-button social">社會</button></li>
+        <li><button @click="fetchGrades('健康')" class="subject-button health">健康</button></li>
       </ul>
     </nav>
     <table v-if="grades.length">

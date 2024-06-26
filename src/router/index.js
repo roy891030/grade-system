@@ -6,6 +6,8 @@ import GradeChinese from '../components/GradeChinese.vue';
 import GradeMath from '../components/GradeMath.vue';
 import GradeSocial from '../components/GradeSocial.vue';
 import GradeHealth from '../components/GradeHealth.vue';
+import GradeCalculation from '../components/GradeCalculation.vue'; // 导入新的组件
+
 
 const routes = [
   {
@@ -41,7 +43,10 @@ const routes = [
   {
     path: '/statistics',
     component: StatisticsView
-  }
+  },
+  { path: '/grade-calculation', 
+    component: GradeCalculation }, // 添加新的路由
+
 ];
 
 const router = createRouter({

@@ -1,14 +1,11 @@
-<!--
-sudo node server.js
-npm run serve 
--->
 <template>
   <div id="app">
     <nav>
       <ul>
-        <li><router-link to="/grade-input">Grade Input</router-link></li>
-        <li><router-link to="/missing-assignments">Missing Assignments</router-link></li>
-        <li><router-link to="/statistics">Statistics</router-link></li>
+        <li><router-link to="/grade-input">成績輸入</router-link></li>
+        <li><router-link to="/missing-assignments">缺交作業</router-link></li>
+        <li><router-link to="/statistics">分數編輯</router-link></li>
+        <li><router-link to="/grade-calculation">成績試算</router-link></li>
       </ul>
     </nav>
     <router-view></router-view>
