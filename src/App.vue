@@ -1,3 +1,7 @@
+<!--
+sudo node server.js
+npm run serve 
+-->
 <template>
   <div id="app">
     <nav>
