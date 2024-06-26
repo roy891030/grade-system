@@ -138,6 +138,47 @@ app.post('/api/grades/health', (req, res) => {
     res.json({ success: true, message: 'Grades submitted successfully!' });
   });
 
+// 获取缺交作业的学生ID
+app.get('/api/missing-assignments', (req, res) => {
+    const query = `
+      SELECT 
+        subject, grade_type, chapter, date, student_id
+      FROM 
+        grades
+      WHERE 
+        score IS NULL
+      ORDER BY 
+        subject, date, student_id
+    `;
+  
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Error fetching missing assignments:', err);
+        res.status(500).json({ success: false, message: 'Database query error' });
+        return;
+      }
+  
+      const missingAssignmentsMap = new Map();
+  
+      results.forEach(row => {
+        const key = `${row.subject}｜${row.grade_type}｜${row.chapter}`;
+        if (!missingAssignmentsMap.has(key)) {
+          missingAssignmentsMap.set(key, {
+            subject: row.subject,
+            gradeType: row.grade_type,
+            chapter: row.chapter,
+            date: new Date(row.date).toLocaleDateString(),
+            missingStudents: []
+          });
+        }
+        missingAssignmentsMap.get(key).missingStudents.push(row.student_id);
+      });
+  
+      const missingAssignments = Array.from(missingAssignmentsMap.values());
+  
+      res.json({ success: true, missingAssignments });
+    });
+  });
 // 启动服务器
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
