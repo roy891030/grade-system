@@ -46,7 +46,7 @@ li {
   padding: 10px 20px;
   border-radius: 25px;
   background-color: #007bff;
-  color: white;
+  color: rgb(0, 0, 0);
   text-decoration: none;
   font-size: 16px;
   transition: background-color 0.3s ease, transform 0.3s ease;
