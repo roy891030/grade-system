@@ -14,18 +14,33 @@
         <tr>
           <th>學生ID</th>
           <th v-for="(header, index) in headers" :key="index">
-            <div>{{ header.grade_type }}｜{{ header.chapter }}</div>
-            <small>{{ header.date }}</small>
+            <div class="header-content">
+              <div>{{ header.grade_type }}｜{{ header.chapter }}</div>
+              <small>{{ header.date }}</small>
+              <div class="button-group">
+                <button v-if="editingIndex !== index" @click="editColumn(index)" class="edit-button">[編輯]</button>
+                <button v-if="editingIndex === index" @click="saveColumn(index)" class="save-button">[儲存變更]</button>
+                <button @click="confirmDeleteColumn(index)" class="delete-button">[刪除整筆資料]</button>
+              </div>
+            </div>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="student in processedGrades" :key="student.student_id">
+        <tr v-for="student in processedGrades" :key="student.student_id" class="table-row">
           <td>{{ student.student_id }}</td>
-          <td v-for="(header, index) in headers" :key="index">{{ student[header.key] || 'null' }}</td>
+          <td v-for="(header, index) in headers" :key="index">
+            <span v-if="!isEditing(index)">{{ student[header.key] || 'null' }}</span>
+            <input v-else v-model="student[header.key]" />
+          </td>
         </tr>
       </tbody>
     </table>
+    <div v-if="showDeleteConfirmation" class="modal">
+      <p>你確定要刪除整筆資料嗎？</p>
+      <button @click="deleteColumn">確定</button>
+      <button @click="cancelDelete">取消</button>
+    </div>
   </div>
 </template>
 
@@ -36,11 +51,16 @@ export default {
     return {
       grades: [],
       headers: [],
-      processedGrades: []
+      processedGrades: [],
+      editingIndex: null,
+      showDeleteConfirmation: false,
+      deleteIndex: null,
+      currentSubject: ''
     };
   },
   methods: {
     async fetchGrades(subject) {
+      this.currentSubject = subject;
       try {
         const response = await fetch(`/api/grades/${encodeURIComponent(subject)}`);
         const data = await response.json();
@@ -55,7 +75,6 @@ export default {
       }
     },
     processGrades() {
-      // 提取所有成績類型和章節/單元的组合，并添加日期，作为表头
       const headersSet = new Map();
       this.grades.forEach(grade => {
         const key = `${grade.grade_type}｜${grade.chapter}`;
@@ -79,6 +98,66 @@ export default {
 
       // 将 Map 转换为数组
       this.processedGrades = Array.from(studentGradesMap.values());
+    },
+    isEditing(index) {
+      return this.editingIndex === index;
+    },
+    editColumn(index) {
+      this.editingIndex = index;
+    },
+    async saveColumn(index) {
+      const header = this.headers[index];
+      const key = header.key;
+      const updates = this.processedGrades.map(student => ({
+        student_id: student.student_id,
+        score: student[key]
+      }));
+      try {
+        const response = await fetch(`/api/grades/${encodeURIComponent(header.grade_type)}/${encodeURIComponent(header.chapter)}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updates)
+        });
+        const data = await response.json();
+        if (data.success) {
+          this.editingIndex = null;
+          this.fetchGrades(this.currentSubject);
+        } else {
+          alert('更新失败');
+        }
+      } catch (error) {
+        console.error('Error saving grades:', error);
+        alert('更新失败');
+      }
+    },
+    confirmDeleteColumn(index) {
+      this.deleteIndex = index;
+      this.showDeleteConfirmation = true;
+    },
+    async deleteColumn() {
+      const header = this.headers[this.deleteIndex];
+      try {
+        const response = await fetch(`/api/grades/${encodeURIComponent(header.grade_type)}/${encodeURIComponent(header.chapter)}`, {
+          method: 'DELETE'
+        });
+        const data = await response.json();
+        if (data.success) {
+          this.showDeleteConfirmation = false;
+          this.deleteIndex = null;
+          this.fetchGrades(this.currentSubject);
+        } else {
+          alert('删除失败');
+        }
+      } catch (error) {
+        console.error('Error deleting grades:', error);
+        alert('删除失败');
+      }
+    },
+    cancelDelete() {
+      this.showDeleteConfirmation = false;
+      this.deleteIndex = null;
     }
   }
 };
@@ -155,5 +234,79 @@ small {
   display: block;
   font-size: 0.8em;
   color: gray;
+}
+
+button {
+  margin-top: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+.edit-button {
+  background-color: #4CAF50; /* Green */
+}
+
+.edit-button:hover {
+  background-color: #45a049;
+}
+
+.save-button {
+  background-color: #008CBA; /* Blue */
+}
+
+.save-button:hover {
+  background-color: #007bb5;
+}
+
+.delete-button {
+  background-color: #f44336; /* Red */
+}
+
+.delete-button:hover {
+  background-color: #da190b;
+}
+
+.table-row:hover {
+  background-color: #00afe489; /* Add a light gray background color on hover */
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+.modal p {
+  margin: 0 0 20px;
+}
+
+.modal button {
+  margin: 0 10px;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
 }
 </style>

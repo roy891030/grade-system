@@ -7,7 +7,7 @@
         <thead>
           <tr>
             <th>成績類型｜章節</th>
-            <th>未提交的學生ID</th>
+            <th>缺交學生</th>
           </tr>
         </thead>
         <tbody>
